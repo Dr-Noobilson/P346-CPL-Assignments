@@ -75,8 +75,60 @@ def chel(A,B):
   
   print("\n")
   for line in B:
-   print ('  '.join(map(str, line)))  
+   print ('  '.join(map(str, line))) 
+   
+   
+def forw(A,B):
+   
+ if sym(A)>1:
+    print("Matrix is not symmetric")
+    return 0
   
+ sum=0
+ A=transpose(LU(A))
+ n=len(A)
+  
+  
+ for i in range(n):
+  for k in range(i):
+    sum=sum+B[k][0]*A[i][k]
+    
+  B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+  sum=0
+  
+ for line in B:
+  print ('  '.join(map(str, line)))
+  
+ return B
+
+
+def back(A,B):
+  if sym(A)>1:
+    print("Matrix is not symmetric")
+    return 0
+  
+  sum=0
+  A=LU(A)
+  n=len(A)
+   
+  for i in range(n-1,-1,-1):
+    for k in range(i+1,n):
+        sum=sum+B[k][0]*A[i][k]
+    
+    B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+    sum=0
+  
+  print("\n")
+  for line in B:
+   print ('  '.join(map(str, line))) 
+   
+  return B
+
+
+def chelos(A,B):
+  
+  print("\n")
+  return back(A,forw(A,B))
 
        
           

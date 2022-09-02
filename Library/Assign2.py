@@ -10,6 +10,13 @@ def rand(t):
  b=(a*t+c)%m
  return b
 
+def LCG(n,b):
+  x=[]
+  for i in range(n):
+    b=rand(b)
+    x.append(b)
+  return x
+
 
 
 #Question 2: Function for finding volume of sphere using throwing method
