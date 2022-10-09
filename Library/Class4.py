@@ -99,8 +99,6 @@ def PosDef(A,C):
     return 1
 
     
-    
-    
 
 
 def GS(A,B):

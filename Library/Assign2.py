@@ -43,8 +43,8 @@ def walk(n,k,j):
   y.append(j)
 
 #LCG function modified to obtain range between -1 to 1
-  k=2*rand(k)/m-1
-  j=2*rand(j)/m-1
+  k=2*rand(k)/m-1+k
+  j=2*rand(j)/m-1+j
   rms=rms+(x[i]-x[i-1])**2+(y[i]-y[i-1])**2
   
  print("RMS:",round(math.sqrt(rms/n),4))

@@ -44,6 +44,9 @@ def sym(A):
   return 1
 
 
+
+
+
 def chel(A,B):
   if sym(A)>1:
     print("Matrix is not symmetric")
@@ -77,39 +80,97 @@ def chel(A,B):
   for line in B:
    print ('  '.join(map(str, line))) 
    
-   
+ 
+ 
+ 
+  
 def forw(A,B):
-   
- if sym(A)>1:
-    print("Matrix is not symmetric")
-    return 0
-  
  sum=0
- A=transpose(LU(A))
- n=len(A)
-  
-  
+ n=len(A) 
  for i in range(n):
-  for k in range(i):
-    sum=sum+B[k][0]*A[i][k]
-    
+  for j in range(i):
+    sum=sum+B[j][0]*A[i][j]  
   B[i][0]=round((B[i][0]-sum)/A[i][i],4)
   sum=0
-  
- for line in B:
-  print ('  '.join(map(str, line)))
   
  return B
 
 
-def back(A,B):
+def back(A,B): 
+  sum=0
+  n=len(A)
+   
+  for i in range(n-1,-1,-1):
+    for j in range(i+1,n):
+        sum=sum+B[j][0]*A[i][j]
+    
+    B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+    sum=0
+   
+  return B
+
+
+def chelos(A,B):
+  if sym(A)>1:
+    print("Matrix is not symmetric")
+    return 0
+  print("\n")
+  A=transpose(Dec(A))
+  return back(transpose(A),forw(A,B))
+
+       
+          
+          
+      
+def Dec(A):
+ n=len(A)
+ sum=0
+ for i in range(n):
+  for j in range(i,n):
+    
+   if j==i:
+    for k in range(0,i):
+     sum=sum+A[k][i]**2
+    A[j][j]= round((A[j][j]-sum)**(0.5),4)
+    
+   else:
+    A[j][i]=0
+    for k in range(0,i): 
+     sum=sum+A[k][i]*A[k][j]
+    A[i][j]= round((A[i][j]-sum)/A[i][i],4)
+        
+   sum=0
+   
+ for line in A:
+   print ('  '.join(map(str, line)))
+ 
+ print("\n")
+ 
+ return A 
+
+
+      
+def chelk(A,B):
   if sym(A)>1:
     print("Matrix is not symmetric")
     return 0
   
   sum=0
-  A=LU(A)
+  A=transpose(Dec(A))
   n=len(A)
+  
+  
+  for i in range(n):
+    for k in range(i):
+      sum=sum+B[k][0]*A[i][k]
+    
+    B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+    sum=0
+  
+  for line in B:
+   print ('  '.join(map(str, line)))
+  
+  A=transpose(A) 
    
   for i in range(n-1,-1,-1):
     for k in range(i+1,n):
@@ -121,25 +182,7 @@ def back(A,B):
   print("\n")
   for line in B:
    print ('  '.join(map(str, line))) 
-   
-  return B
-
-
-def chelos(A,B):
-  
-  print("\n")
-  return back(A,forw(A,B))
-
-       
-          
-          
-      
-  
-
-      
-      
+         
       
    
    
-    
-    

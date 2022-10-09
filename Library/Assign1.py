@@ -45,8 +45,7 @@ def matpro(a,b):
       for k in range(len(b)):    
        s=round(s+a[i][k]*b[k][j],3)
       x[i][j],s=s,0    
-  for line in x:
-    print ('  '.join(map(str, line)))
+  return x
  
     
 #Question 5: Class to find sum, product and modulus of two complex numbers
