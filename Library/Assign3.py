@@ -1,14 +1,6 @@
 import math
 from .Assign1 import matpro
 
-def transpose(A):
-  for i in range(len(A)):
-    for j in range(i+1,len(A)):
-      A[i][j],A[j][i]=A[j][i],A[i][j]
-  return A
-
-
-
 
 #Guass-Jordan Elimination
 
@@ -55,7 +47,7 @@ def solve(a,i,e):
  
 
 #Guass performs solve() on every column of the matrix   
-def Guass(a,e):
+def Guass(a,e): #e is precision
  for i in range(len(a)):
   solve(a,i,e)
  for line in a:
@@ -68,11 +60,76 @@ def Guass(a,e):
 
 
 
+
+
+
+
+
+
+
+
+#LU Decomposition
+
+#The subsequent functions are used for row pivoting and checking if matrix A can be LU decomposed
+#Function for returning cofactor
+def cof(A, i, j): return [row[:j] + row[j+1:] for row in (A[:i] + A[i+1:])]
+
+#Function for returning determinant
+def det(A):
+  n=len(A) 
+  if n==1:
+    return A[0][0]
+    
+  if n==2:
+    return A[0][0]*A[1][1]-A[1][0]*A[0][1]
+  sum = 0
+ 
+  for i in range(n):
+    sign= (-1)**i
+    subdet = det(cof(A,0,i))
+    sum= sum+ (sign * A[0][i] * subdet)
+ 
+  return sum
+
+
+#Function for returning the largest element of a column below the diagonal element for swapping
+def check2(a,i):
+   y=a[i][i]
+   t=i
+   for j in range(i,len(a)):         
+    if abs(a[j][i])>abs(y):
+      y=a[j][i]
+      t=j
+   if t==i:return -1               
+   else:return t          
+
+#Function swap2 is used swapping the kth and ith element for pivoting   
+def swap2(a,b,k,i): 
+  for t in range(0,len(a[0])):       
+   a[k][t],a[i][t]=a[i][t],a[k][t]          
+  b[k][0],b[i][0]=b[i][0],b[k][0]
+  return a,b
+
+#Arrange is used for row pivoting in case the LU Decomposition condition is not satisfied
+def arrange(A,B):
+  n=len(A)
+  for i in range(n):
+    C=[row[:i+1] for row in A[:i+1]] #C stores the leading submatrices
+    if det(C)==0:
+      q=check2(A,i)
+      if q<0:
+        print("LU not possible")
+        return 0
+      A,B=swap2(A,B,q,i)             #Partial row pivoting if det(C) is 0
+    C=[row[:i+1] for row in A[:i+1]]
+    if det(C)==0:
+      print("LU not possible")
+      return 0
   
-
-
-
-
+  return A,B
+    
+    
+    
 #LU Decomposition
 def LU(A):
  n=len(A)
@@ -89,7 +146,7 @@ def LU(A):
     A[i][j]= A[i][j]-sum
     
     
-   #Lower Triangle
+   #Upper Triangle
    else:
     for k in range(j): 
      sum=sum+A[i][k]*A[k][j]
@@ -131,12 +188,27 @@ def back(A,B,e):
     
     
 #Calling each function
-def LUC(A,B,e):
+def LUD(A,B,e): #e is precision
     A=LU(A)
     B= back(A,forw(A,B),e)
     print("\n Solution matrix X: \n")
     for line in B:
       print ('  '.join(map(str, line)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -161,9 +233,10 @@ def sym(A):
 def Dec(A):
  n=len(A)
  sum=0
- for i in range(n):
+#Upper triangle
+ for i in range(n): 
   for j in range(i,n):
-    
+   
    if j==i:
     for k in range(0,i):
      sum=sum+A[k][i]**2
@@ -176,32 +249,31 @@ def Dec(A):
     A[i][j]= (A[i][j]-sum)/A[i][i]
         
    sum=0
- 
  return A 
 
 
 #Function for solving linear equations using Chelosky Decomposition     
 def chelk(A,B,e):
+  
+  #Checking for symmetric matrix
   if sym(A)>1:
     print("Matrix is not symmetric")
     return 0
   
-  #Forward Substitution
   sum=0
-  A=transpose(Dec(A))
+  A=Dec(A)
   n=len(A)
   
+  #Forward Substitution
   
   for i in range(n):
     for k in range(i):
-      sum=sum+B[k][0]*A[i][k]
+      sum=sum+B[k][0]*A[k][i]
     
     B[i][0]=round((B[i][0]-sum)/A[i][i],e)
     sum=0
   
-  
   #Backward Substitution
-  A=transpose(A) 
   
   for i in range(n-1,-1,-1):
     for k in range(i+1,n):
@@ -220,40 +292,58 @@ def chelk(A,B,e):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Jacobi and Guass-Seidal
 
-def pivot(A,B):
+#Pivoting function for producing diagonally dominant matrix
+def pivot(A):
  c=0
  t=0
- for i in range(len(A[0])):
-     t=i
+ for i in range(len(A)): #Row pivot
+     t=i                 #t stores largest element of a column
      c=abs(A[i][i])
-     for j in range(len(A)):
-         if abs(A[j][i])>c:
-             c=abs(A[j][i])
-             t=j
+     for j in range(len(A[0])):
+         if abs(A[i][j])>c:
+             c=abs(A[i][j])
+             t=j 
          
-     if j>i:
-         for v in range(len(A[0])):
-             A[i][v],A[t][v]=A[t][v],A[i][v]
-             B[i][0],B[t][0]=B[t][0],B[i][0]
-     elif j<i:
-         print("Jacobi not possible \n")
+     if t>i:
+         for v in range(len(A)):
+             A[v][i],A[v][t]=A[v][t],A[v][i] 
+     elif t<i:
+         print("Matrix is not diagonally dominant \n")
          return 0
      
-     
- return A,B
+ return A
      
           
-      
+
+#Jacobi function     
 def Jacobi(A,B,e):
-    
-    A,B=pivot(A,B)
+
+    if A==0:  #From pivot function
+      print("Jacobi not possible")
+      return 0
     
     n=len(A)
-    C=[[1] for y in range(n)]
-    D=[[0] for y in range(n)]
-    m=2000
+    C=[[1] for y in range(n)]       #C stores values after new iteration
+    D=[[0] for y in range(n)]       #D stores the values after last iteration
+    m=500000                        #m stores maximum number of iterations
     sum=0
     y=1
     
@@ -263,47 +353,38 @@ def Jacobi(A,B,e):
             if j!=i:
              sum=sum+A[i][j]*C[j][0]
             
-            if abs(D[j][0]-C[j][0]) > (10**(-e)):y=1
+            if abs(D[j][0]-C[j][0]) > (10**(-e)):y=1  #Checking for precision
                 
         if y==1:    
          D[i][0]=(B[i][0]-sum)/A[i][i]
-        else:
-            
-         print(k)
-         for line in C:
-          print ('  '.join(map(str, line)))
-         return C
+         
+        else:break
      
         sum=0
         
      y=0    
      
      C,D=D,C
-     
-
+    
+    print("Number of iterations:",k+1,"\nSolution matrix X:\n")
     for line in C:
       print ('  '.join(map(str, line) ))         
                 
 
 
-
-
-def PosDef(A,C):
-    K=matpro(matpro(transpose(C),A),C)
-    for i in range(len(K)):
-        for j in range(len(K[0])):
-            if K[i][j]<=0:
-                print("Not positive definite.")
-                return 0
-    return 1
-
     
-
+    
+#Guass Seidal Function
 
 def GS(A,B,e):
     n=len(A)
-    X=[[0] for y in range(n)]
-    m=200
+    
+    if A==0: #From pivot function
+      print("Guass-Seidal not possible")
+      return 0
+    
+    X=[[0] for y in range(n)]       #X stores values after new iteration
+    m=300
     y,sum=0,0
     
     for v in range(m):
@@ -318,21 +399,35 @@ def GS(A,B,e):
         
         c=(B[i][0]-sum)/A[i][i]
         
-        if abs(c-X[i][0])<(10**(-e)):y+=1
+        if abs(c-X[i][0])<(10**(-e)):y+=1 #Precision condition
         X[i][0]=c
         
-     if y==n:
-      print(v,"\n")
-      for line in X:
-       print ('  '.join(map(str, line) )) 
-      return X
+     
+     if y==n:break #If all elements of X follow precision condition
+  
     
-    print("\n") 
+    print("Number of iterations:", v+1,"\nSolution matrix X:\n") 
     for line in X:
-       print ('  '.join(map(str, line) )) 
-    return X          
+       print ('  '.join(map(str, line) ))         
         
         
         
 
 
+#Function for generating transpose of a matrix
+def transpose(A):
+  for i in range(len(A)):
+    for j in range(i+1,len(A)):
+      A[i][j],A[j][i]=A[j][i],A[i][j]
+  return A
+
+
+#For for checking whether matrix A is positive definite or not
+def PosDef(A,C):
+    K=matpro(matpro(transpose(C),A),C)
+    for i in range(len(K)):
+        for j in range(len(K[0])):
+            if K[i][j]<=0:
+                print("Not positive definite.")
+                return 0
+    return 1
