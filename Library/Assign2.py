@@ -20,14 +20,15 @@ def LCG(n,b):
 
 
 #Question 2: Function for finding volume of sphere using throwing method
-def sphere(k,l):
+def sphere(k,l,j):
  n=999000
  x=0
  for i in range(n):
 #Finding the number of points within radius 1 unit
-  if (i/n)**2+k**2+l**2<=1:x=x+1             
+  if j**2+k**2+l**2<=1:x=x+1             
   k=rand(k)/m                                     
   l=rand(l)/m
+  j=rand(j)/m
 
  print(x/n)
  

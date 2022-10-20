@@ -284,6 +284,7 @@ def chelk(A,B,e):
   
   for line in B:
    print ('  '.join(map(str, line))) 
+  return B
          
          
          
@@ -345,30 +346,30 @@ def Jacobi(A,B,e):
     D=[[0] for y in range(n)]       #D stores the values after last iteration
     m=500000                        #m stores maximum number of iterations
     sum=0
-    y=1
+    y=0
     
     for k in range(m):
-     for i in range(n):
+      for i in range(n):
         for j in range(n):
             if j!=i:
              sum=sum+A[i][j]*C[j][0]
             
-            if abs(D[j][0]-C[j][0]) > (10**(-e)):y=1  #Checking for precision
+            if abs(D[j][0]-C[j][0]) < (10**(-e)):y+=1  #Checking for precision
                 
-        if y==1:    
+        if y!=n:    
          D[i][0]=(B[i][0]-sum)/A[i][i]
          
-        else:break
+        else:
+          print("Number of iterations:",k+1,"\nSolution matrix X:\n")
+          for line in C:
+            print ('  '.join(map(str, line) ))   
+          return    
      
         sum=0
-        
-     y=0    
-     
-     C,D=D,C
-    
-    print("Number of iterations:",k+1,"\nSolution matrix X:\n")
-    for line in C:
-      print ('  '.join(map(str, line) ))         
+          
+      y=0    
+      C,D=D,C
+          
                 
 
 

@@ -119,70 +119,65 @@ def chelos(A,B):
   return back(transpose(A),forw(A,B))
 
        
-          
-          
+
       
+   
+   
+
+#Chelosky Decomposition function
 def Dec(A):
  n=len(A)
  sum=0
- for i in range(n):
+#Upper triangle
+ for i in range(n): 
   for j in range(i,n):
-    
+   
    if j==i:
     for k in range(0,i):
      sum=sum+A[k][i]**2
-    A[j][j]= round((A[j][j]-sum)**(0.5),4)
+    A[j][j]= (A[j][j]-sum)**(0.5)
     
    else:
     A[j][i]=0
     for k in range(0,i): 
      sum=sum+A[k][i]*A[k][j]
-    A[i][j]= round((A[i][j]-sum)/A[i][i],4)
+    A[i][j]= (A[i][j]-sum)/A[i][i]
         
    sum=0
-   
- for line in A:
-   print ('  '.join(map(str, line)))
- 
- print("\n")
- 
  return A 
 
 
-      
-def chelk(A,B):
+#Function for solving linear equations using Chelosky Decomposition     
+def chelk(A,B,e):
+  
+  #Checking for symmetric matrix
   if sym(A)>1:
     print("Matrix is not symmetric")
     return 0
   
   sum=0
-  A=transpose(Dec(A))
+  A=Dec(A)
   n=len(A)
   
+  #Forward Substitution
   
   for i in range(n):
     for k in range(i):
-      sum=sum+B[k][0]*A[i][k]
+      sum=sum+B[k][0]*A[k][i]
     
-    B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+    B[i][0]=round((B[i][0]-sum)/A[i][i],e)
     sum=0
   
-  for line in B:
-   print ('  '.join(map(str, line)))
+  #Backward Substitution
   
-  A=transpose(A) 
-   
   for i in range(n-1,-1,-1):
     for k in range(i+1,n):
         sum=sum+B[k][0]*A[i][k]
     
-    B[i][0]=round((B[i][0]-sum)/A[i][i],4)
+    B[i][0]=round((B[i][0]-sum)/A[i][i],e)
     sum=0
   
-  print("\n")
   for line in B:
    print ('  '.join(map(str, line))) 
-         
       
-   
-   
+  return B  
