@@ -26,8 +26,9 @@ def ellipse(x,y,n):
 
 
 
-def Wein(r):
- print("Wein's constant b:",round(6.626*3*0.001/(1.381*r)*1000,4),"*10^(-4)")
+def Wein(r,e):
+ print("Wein's constant b:",math.floor((6.626*3*0.001/(1.381*r)*10000)*(10**e))/(10**e),"* 10^(-4)")
+ 
  
 
 
