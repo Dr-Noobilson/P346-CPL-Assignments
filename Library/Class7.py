@@ -1,4 +1,8 @@
 import math
+from .Assign2 import rand
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 
 #Midpoint
@@ -51,6 +55,54 @@ def Simp(funx,a,b,N):
 
 
 
+j=32768
 
+def LCG(n,a,b,k):
+  x=[]
+  for i in range(n):
+    k=rand(k)/j
+    x.append(a+(b-a)*k)
+  return x
+
+#Monte Carlo
+
+def MonteC(funx,a,b,N,e):
     
-       
+    sum1=sum2=0
+    r=LCG(N,a,b,e)
+    
+    for i in range(N):
+        sum1+=funx(r[i])**2
+        sum2+=funx(r[i])
+    
+    sum1= sum1/N + (sum2/N)**2
+    sum2=(b-a)*sum2/N
+    
+    print("Fn:",sum2,"\nError:",sum1)
+    return sum2
+
+
+def PlotMC(k,a,b,func):
+ k=k/(b-a)
+ y=[k,k,k]
+ f = plt.figure()
+ x = np.linspace(a, b)
+ z=np.arange(a,b+(b-a)/2,0.5)
+ plt.plot(x, func(x))
+ plt.plot(z,y)
+ plt.show()  
+     
+    
+def MCarlo(N,a,b,funx,e):
+    p=[]
+    q=[]
+    for i in range(N):
+        r=int((i+1)*10)
+        p.append(r)
+        q.append(MonteC(funx,a,b,r,0.1))
+        if abs(q[i]-3.14159265)<e:break
+    print(p,"\n",q)    
+    plt.plot(p,q)   
+
+
+

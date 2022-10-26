@@ -12,7 +12,7 @@ def Bracket(a,b,func,t,d):
     if t==10:return 0
     
     if x*y<0:
-        print("a=",a,",b=",b,"\nIterations:",t,"\n")
+        print("a=",a,", b=",b,"\nIterations:",t,"\n")
         return a,b
      
     t+=1
@@ -20,16 +20,35 @@ def Bracket(a,b,func,t,d):
     if x*y>0:
         
         if abs(x)<abs(y):   
-          return Bracket(float(a-d*(b-a)),b,func,t) 
+          return Bracket(float(a-d*(b-a)),b,func,t,d) 
         elif abs(x)>abs(y):
-          return Bracket(a,float(b+d*(b-a)),func,t) 
+          return Bracket(a,float(b+d*(b-a)),func,t,d) 
         
+
         
 #Bisection function       
-def Bisect(a,b,func,t,e):
+def Bisect(a,b,func,e): 
+ condition=1
+ k=0
+ x=[]
+ 
+ while condition:    
+     
+    k=func((a+b)/2)
+    if k<0: a= (a+b)/2
+    elif k>0: b=(a+b)/2
+    else: return "Incorrect-choice"    
+    
+    condition= abs(k)>10**(-e) 
+    x.append(k)
+       
+ return x
+    
+    
+def Bisection(a,b,func,e):
+ t=0
  k=1   
  condition=1
- print ("Steps ", (a+b)/2,", Value: ", k,"\nIteration:",t+1,"\n")
  
  while condition:    
      
@@ -39,19 +58,18 @@ def Bisect(a,b,func,t,e):
     else: return "Incorrect-choice"    
     
     condition= abs(k)>e 
-    print ("Root: ", (a+b)/2,", Value: ", k,"\nIteration:",t+1,"\n")
     t+=1
        
  print ("Root: ", (a+b)/2,", Value: ", k,"\nIteration:",t+1,"\n")
  return 
     
     
-
  
 #Regula Falsi  
 def Regula(a,b,func,e):
- t=m=1
+ m=0
  condition=1
+ x=[]
  
  while condition:
     X=func(a)
@@ -60,27 +78,41 @@ def Regula(a,b,func,e):
         
     if func(m)*X<0: b=m  
     else: a=m
-    t+=1
-    condition= abs(func(m))>e
+    condition= abs(func(m))>10**(-e)
+    x.append(func(m))
     
- print("Root: ", m,", Value: ", func(m),"\nIteration:",t,"\n")
- return 
-
-
+ return x
 
 
 
 #Newton rapshon
 def NewtonR(x,func,funx,e):
-    l=t=0
+    r=[]
     while abs(x-l) > 10**(-e):
         l=x 
         x=l-(func(l)/funx(l))
-        t+=1
-    print("Root:",x,", Value:",func(x),"\nIteration:",t,"\n")
-    return x
+        r.append(func(x))
+    return r
     
 
+def Table1(a,b,func,e):
+    
+    print("Iteration     Bisection     Regula-Falsi")
+    x=Bisect(a,b,func,e)
+    y=Regula(a,b,func,e)
+    z=max(len(x),len(y))
+    w=min(len(x),len(y))
+    for i in range(z):
+     if i<w:
+      print(i+1,"  ",x[i],"  ",y[i]) 
+     else:
+        if z==len(x):
+            print(i+1,"  ",x[i])
+        else:
+            print(i+1,"         ",y[i])
+ 
+ 
+ 
     
     
     
@@ -89,7 +121,7 @@ def NewtonR(x,func,funx,e):
 
 def Makefunc(c,j):
     n=len(c)
-    y=0
+    y=0.0
     for i in range(n):
         y=y+c[i]*(j**(n-i-1))
     
@@ -120,7 +152,6 @@ def deflate(c,b):
     
 #Laguerre   
 
-
 def Lag(c,b,e):
     
     n=len(c)
@@ -131,7 +162,7 @@ def Lag(c,b,e):
     if Makefunc(c,b)==0:
         return b
         
-    while abs(b-l)>e:
+    while abs(b-l)>10**(-e):
         j=j+1
         l=b
         G=Makefunc(Diff(c),b)/Makefunc(c,b)
@@ -148,7 +179,7 @@ def Lag(c,b,e):
             
 
    
-def Solve(c,b,e):
+def LagSolve(c,b,e):
     g=[]
     while len(c)>2:
         b=Lag(c,b,e)
@@ -156,7 +187,7 @@ def Solve(c,b,e):
         c=deflate(c,b)
         
     g.append(-c[1]/c[0]) 
-    print(g)    
+    print("Roots are:",g)    
     
 
 
@@ -164,7 +195,7 @@ def Solve(c,b,e):
 
 
 
-#Fit function
+#Function for fitting data from A, B to a polynomial of degree n-1
 
 def Fit(A,B,n):
  sum1=0
@@ -186,17 +217,12 @@ def Fit(A,B,n):
         
     D[i][0]=sum2
     sum2=0
- 
 
- for line in C:
-   print ('  '.join(map(str, line))) 
- print()
- for line in D:
-   print ('  '.join(map(str, line))) 
-   
+  
+ #Printing errors in a1 and a2 and r^2 
  if n==2:
    S=len(A)*C[1][1]-(C[0][1]**2)
-   print("Error (a1):",C[1][1]/S,"\nError (a2):",len(A)/S)
+   print("\nError (a1):",C[1][1]/S,"\nError (a2):",len(A)/S)
    for i in range(len(B)):
      sum2=sum2+(B[i][0]**2)
    print("r^2:",(D[1][0]**2)/(C[1][1]*sum2))
@@ -204,28 +230,21 @@ def Fit(A,B,n):
  print()
  return C,D
 
-
-
-def my_formula(x,D): 
-    k=0
-    for i in range(len(D)):
-        k+=D[i][0]*(x**i)
-    return k  
-
-
-
+ 
+ 
+#Function for plot B vs A and func
 def FitPlot(A,B,a,b,func,D):
  f = plt.figure()
  x = np.linspace(a, b, 1000)
  plt.plot(x, func(x,D))
  plt.plot(A,B)
- plt.show()
+ plt.show()    
 
 
 
 
 
-
+#Lagrange Function
     
 def Lagrange(x,y,a):
     n=len(x)

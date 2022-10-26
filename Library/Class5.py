@@ -51,8 +51,8 @@ def Bisection(a,b,func,t):
       
       
             
-def Bisect(a,b,func,t,e):
-
+def Bisect(a,b,func,e):
+ t=0
  k=1   
  condition=1
  
@@ -107,6 +107,9 @@ def NewtonR(x,func,funx,e):
         
 
 
+
+
+
 #To create fucntion
 
 def Makefunc(c,j):
@@ -142,8 +145,7 @@ def deflate(c,b):
     
 #Laguerre   
 
-v=0.0001
-def Lag(b,c):
+def Lag(c,b,e):
     
     n=len(c)
     l=r=0
@@ -153,7 +155,7 @@ def Lag(b,c):
     if Makefunc(c,b)==0:
         return b
         
-    while abs(b-l)>v:
+    while abs(b-l)>e:
         j=j+1
         l=b
         G=Makefunc(Diff(c),b)/Makefunc(c,b)
@@ -164,26 +166,27 @@ def Lag(b,c):
             b=b-(n/(G-r))
         else:
             b=b-(n/(G+r))
-    
-    if Makefunc(c,b)<v:
-        print("Root:",b,", Iteration: ",j,"\n")
-        return b
+
+    print("Root:",b,", Iteration: ",j,"\n")
+    return b
             
 
    
-def Solve(b,c):
+def Solve(c,b,e):
     g=[]
-    t=0
     while len(c)>2:
-        b=Lag(b+0.1,c)
+        b=Lag(c,b,e)
         g.append(b)
         c=deflate(c,b)
         
     g.append(-c[1]/c[0]) 
-    print(g)
+    print(g)    
     
-    
-    
+
+
+  
+
+#Lagrange Function
     
 def Lagrange(x,y,a):
     n=len(x)
@@ -196,7 +199,6 @@ def Lagrange(x,y,a):
         r=r+(p*y[i])
         p=1
     print(r)
-    
         
     
         
