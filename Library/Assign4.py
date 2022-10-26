@@ -4,6 +4,7 @@ from .Assign3 import chelk
 import numpy as np
 
 
+
 #Bracket function
 def Bracket(a,b,func,t,d):
     
@@ -25,45 +26,30 @@ def Bracket(a,b,func,t,d):
           return Bracket(a,float(b+d*(b-a)),func,t,d) 
         
 
+
+
         
 #Bisection function       
 def Bisect(a,b,func,e): 
  condition=1
- k=0
+ k=1
  x=[]
  
  while condition:    
      
     k=func((a+b)/2)
-    if k<0: a= (a+b)/2
-    elif k>0: b=(a+b)/2
-    else: return "Incorrect-choice"    
+    if k*func(a)>0: a= (a+b)/2
+    elif k*func(b)>0: b=(a+b)/2
+    else: return "Incorrect-choice"      
     
     condition= abs(k)>10**(-e) 
-    x.append(k)
+    x.append(round(((a+b)/2),7))
        
  return x
-    
-    
-def Bisection(a,b,func,e):
- t=0
- k=1   
- condition=1
  
- while condition:    
-     
-    k=func((a+b)/2)
-    if k<0: a= (a+b)/2
-    elif k>0: b=(a+b)/2
-    else: return "Incorrect-choice"    
-    
-    condition= abs(k)>e 
-    t+=1
-       
- print ("Root: ", (a+b)/2,", Value: ", k,"\nIteration:",t+1,"\n")
- return 
-    
-    
+ 
+ 
+
  
 #Regula Falsi  
 def Regula(a,b,func,e):
@@ -79,7 +65,7 @@ def Regula(a,b,func,e):
     if func(m)*X<0: b=m  
     else: a=m
     condition= abs(func(m))>10**(-e)
-    x.append(func(m))
+    x.append(round(m,7))
     
  return x
 
@@ -88,13 +74,18 @@ def Regula(a,b,func,e):
 #Newton rapshon
 def NewtonR(x,func,funx,e):
     r=[]
+    l=0
     while abs(x-l) > 10**(-e):
         l=x 
         x=l-(func(l)/funx(l))
-        r.append(func(x))
+        r.append(round(x,7))
     return r
     
 
+
+
+
+#Table1 is used for comparing solutions from Bisection and Regula-Falsi in a table
 def Table1(a,b,func,e):
     
     print("Iteration     Bisection     Regula-Falsi")
@@ -104,20 +95,45 @@ def Table1(a,b,func,e):
     w=min(len(x),len(y))
     for i in range(z):
      if i<w:
-      print(i+1,"  ",x[i],"  ",y[i]) 
+      print("     ",i+1,"      ",x[i],"      ",y[i]) 
      else:
         if z==len(x):
-            print(i+1,"  ",x[i])
+            print("     ",i+1,"      ",x[i])
         else:
-            print(i+1,"         ",y[i])
+            print("      ",i+1,"         ",y[i])
  
  
+
  
+#Table2 is used for comparing solutions from Bisection, Regula-Falsi and Newton-Raphson in a table   
+def Table2(a,b,func,funx,j,e):
+    
+    x=Bisect(a,b,func,e)
+    y=Regula(a,b,func,e)
+    r=NewtonR(j,func,funx,e)
+    z=max(len(x),len(y),len(r))
+    
+    M = [ [ "" for i in range(4) ] for j in range(z) ]
+
+    print("Iteration     Bisection       Regula-Falsi        Newton-Raphson")
     
     
+    for i in range(z):
+        M[i][0]=i+1
+        if i<len(x):M[i][1]=x[i]
+        if i<len(y):M[i][2]=y[i]
+        if i<len(r):M[i][3]=r[i]
+        
+    for line in M:
+      print ('           '.join(map(str, line)))
+        
+        
+    
+ 
+     
     
 
-#To create fucntion
+#To create function
 
 def Makefunc(c,j):
     n=len(c)
@@ -178,7 +194,7 @@ def Lag(c,b,e):
     return b
             
 
-   
+#LagSolve calls both Laguerre and deflation function   
 def LagSolve(c,b,e):
     g=[]
     while len(c)>2:
@@ -189,6 +205,7 @@ def LagSolve(c,b,e):
     g.append(-c[1]/c[0]) 
     print("Roots are:",g)    
     
+
 
 
 
@@ -235,26 +252,12 @@ def Fit(A,B,n):
 #Function for plot B vs A and func
 def FitPlot(A,B,a,b,func,D):
  f = plt.figure()
- x = np.linspace(a, b, 1000)
- plt.plot(x, func(x,D))
- plt.plot(A,B)
+ x = np.linspace(a, b, 1000) 
+ plt.plot(x, func(x,D)) #Plotting the obtained best fit function
+ plt.plot(A,B) #Plotting the given data points
  plt.show()    
 
 
 
 
 
-#Lagrange Function
-    
-def Lagrange(x,y,a):
-    n=len(x)
-    r=0
-    p=1
-    for i in range(n):
-        for j in range(n):
-           if j!=i:
-            p=p*((a-x[j])/(x[i]-x[j]))
-        r=r+(p*y[i])
-        p=1
-    print(r)
-    
