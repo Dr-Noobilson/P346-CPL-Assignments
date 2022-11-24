@@ -78,7 +78,7 @@ def MonteC(funx,a,b,N,e):
     sum1= sum1/N + (sum2/N)**2
     sum2=(b-a)*sum2/N
     
-    print("Fn:",sum2,"\nError:",sum1)
+    print("Fn:",sum2,"\nError:",math.sqrt(sum1))
     return sum2
 
 
