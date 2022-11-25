@@ -198,7 +198,7 @@ def Lagrange(x,y,a):
             p=p*((a-x[j])/(x[i]-x[j]))
         r=r+(p*y[i])
         p=1
-    print(r)
+    return r
         
     
         
