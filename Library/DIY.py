@@ -4,49 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-#Monte Carlo
-
-def MonteC(funx,a,b,N,e):
-    
-    sum1=sum2=0
-    r=LCG(N,a,b,e)
-    
-    for i in range(N):
-        sum1+=funx(r[i])**2
-        sum2+=funx(r[i])
-    
-    sum1= sum1/N + (sum2/N)**2
-    sum2=(b-a)*sum2/N
-    
-    print("Fn:",sum2,"\nError:",math.sqrt(sum1))
-    return sum2
-
-
-def PlotMC(k,a,b,func):
- k=k/(b-a)
- y=[k,k,k]
- x = np.linspace(a, b)
- z=np.arange(a,b+(b-a)/2,0.5)
- plt.plot(x, func(x))
- plt.plot(z,y)
- plt.show()  
-     
-    
-def MCarlo(N,a,b,funx,e):
-    p=[]
-    q=[]
-    K=[]
-    for i in range(N):
-        r=int((i+1)*10)
-        p.append(r)
-        q.append(MonteC(funx,a,b,r,0.1))
-        if abs(q[i]-3.14159265)<e:break
-    print(p,"\n",q)    
-    plt.plot(p,q)   
-    
-
-
-
 j=32768
 
 def LCG(n,k):
@@ -55,6 +12,57 @@ def LCG(n,k):
     k=rand(k)/j
     x.append(k)
   return x
+
+def LCG2(n,a,b,k):
+  x=[]
+  for i in range(n):
+    k=rand(k)/j
+    x.append(a+(b-a)*k)
+  return x
+
+
+#Monte Carlo  
+def montec(integrand,a,b,N,samples):
+    
+    mean = 0
+    variance = 0
+    solution_list = []
+    
+    for i in range(N):
+        variance += integrand(samples[i])**2
+        mean += integrand(samples[i])
+    
+    solution_list.append((b-a)*mean/N)
+    solution_list.append(variance/N - (mean/N)**2)
+    
+    return solution_list
+
+
+def crude_montec_plotter(integrand,a,b,N,seed):
+    
+    x_values = []
+    mean_values = []
+    variance_values =[]
+    samples = []
+    N1 = 10
+    step_size = int((N-N1)/50)
+    
+    while N1 <= N:
+        
+        x_values.append(N1)
+        samples = LCG2(N1,a,b,seed)
+        x,y = montec(integrand,a,b,N1,samples)
+        mean_values.append(x)
+        variance_values.append(y)
+        
+        N1 += step_size
+        seed += step_size/N1
+
+    return x_values, mean_values, variance_values
+
+
+
+
 
 
 def inverse_sampling(cpdf,N,seed,parameter):
@@ -79,11 +87,49 @@ def importance_sampling(integrand,pdf,guess_pdf,samples,parameter):
     return solution_list
 
 
+def minimizer(P1,P2,integrand,pdf,guess_pdf,cpdf,N,seed,step_size):
+    variance = []
+    parameters = []
+    
+    while P1 < P2:
+        samples = inverse_sampling(cpdf,N,seed,P1)
+        variance.append(importance_sampling(integrand,pdf,guess_pdf,samples,P1)[1])
+        parameters.append(P1)
+        P1 += step_size
+    
+    plt.scatter(parameters,variance,marker='.')
+    plt.show()
+
+
+def solution_plotter(integrand,pdf,guess_pdf,parameter,cpdf,N,seed):
+    
+    x_values = []
+    mean_values = []
+    variance_values =[]
+    N1 = 10
+    step_size = int((N-N1)/30)
+    
+    while N1 <= N:
+        
+        x_values.append(N1)
+        
+        samples = inverse_sampling(cpdf,N1,seed,parameter)
+        a,b = importance_sampling(integrand,pdf,guess_pdf,samples,parameter)
+        mean_values.append(a)
+        variance_values.append(b)
+        
+        N1 += step_size
+        seed += step_size/N1
+
+    return x_values, mean_values, variance_values
+
 
 
 def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size,seed):
     
     random_sample = []
+    accepted = 0
+    burn_in = int(N*0.5)
     
     for i in range(N):
         
@@ -94,24 +140,39 @@ def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size,seed):
         if x0 - step_size/2 < a: l= x0 - a
         
         trial = x0 - l + (r+l)*rand(x0)/j
-        r = guess_pdf(trial,parameter)/guess_pdf(x0,parameter)
+        acceptance = guess_pdf(trial,parameter)/guess_pdf(x0,parameter)
   
-        if r >= 1: x0 = trial
+        if acceptance >= 1: 
+            x0 = trial
+            accepted += 1
             
         else:
             seed = rand(seed)/j 
-            if seed<r: x0 = trial
-            
-    return random_sample
+            if seed < acceptance: 
+                x0 = trial
+                accepted  += 1
+    
+    print(accepted/N)    
+    return random_sample[burn_in:]
 
 
 
 def markov_sample_plotter(pdf,samples,a,b,parameter):
     N=len(samples)
-    f=plt.figure()
+    new_sample = []
+    
+    for i in range(N):
+        if i % 10 == 0:
+            new_sample.append(samples[i])
+            
+            
+    f1=plt.figure()
+    plt.hist(samples,bins=20)
+    f2=plt.figure()
+    plt.hist(new_sample,bins=20)
+    f3=plt.figure()
     x = np.linspace(a, b, 1000)
     plt.plot(x, pdf(x,parameter))
-    plt.hist(samples)
     plt.show()  
               
                
