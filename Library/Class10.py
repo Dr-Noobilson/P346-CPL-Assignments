@@ -31,7 +31,7 @@ def powriter(A,x0,e):
     sum=0 
     for i in range(len(y)):sum+=y[i][0]**2
     for i in range(len(y)):y[i][0]/=math.sqrt(sum)
-    return(y)
+    return y
     
     
       

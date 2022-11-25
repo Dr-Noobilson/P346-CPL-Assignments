@@ -116,9 +116,7 @@ def CODE1(t0,x0,v0,dxdt,dvdt,h,t):
         v0 += (k1v+2*k2v+2*k3v+k4v)/6
         #z+= (k1z+2*k2z+2*k3z+k4z)/6
         t0=t0+h
-
-    
-    print("Solution at t =",t, ", are: x =", x0,", v =",v0)      
+     
     return T,V,X
 
 
@@ -169,32 +167,47 @@ def CODE2(t0,x,y,z,func1,func2,func3,h,t):
 
 
 
-def shoot(x0,xn,y0,func1,func2,z,h):
+def shoot(t0,x0,v0,dxdt,dvdt,h,tn):
     
-    X,Y,Z=CODE1(x0,z,y0,func1,func2,h,xn)
-    return Y[-1]
+    T,V,X=CODE1(t0,x0,v0,dxdt,dvdt,h,tn)
+    return X[-1]
 
 
-def bound(x0,xn,y0,yn,func1,func2,z1,z2,h,e):
+def bound(t0,tn,x0,xn,dxdt,dvdt,v1,v2,h,e):
    
-   R=0
-   k1=shoot(x0,xn,y0,func1,func2,z1,h)
-   k2=shoot(x0,xn,y0,func1,func2,z2,h)
-   t=z1+(z2-z1)*(yn-k1)/(k2-k1)
-   j=shoot(x0,xn,y0,func1,func2,t,h)
+   iterations = 0
    
-   while abs(j-yn)>e:
+   k1 = shoot(t0,x0,v1,dxdt,dvdt,h,tn)
+   k2 = shoot(t0,x0,v2,dxdt,dvdt,h,tn)
+   v0 = v1 + (v2-v1)*(xn-k1)/(k2-k1)
+   j = shoot(t0,x0,v0,dxdt,dvdt,h,tn)
+   
+   while abs(j-xn) > e:
+       iterations += 1
      
-     R=R+1
-     if j<yn:z1=t
-     else: z2=t
+       if j < xn: v1=v0
+       else: v2=v0
     
-     k1=shoot(x0,xn,y0,func1,func2,z1,h)
-     k2=shoot(x0,xn,y0,func1,func2,z2,h)
-     t=z1+(z2-z1)*(yn-k1)/(k2-k1)
-     j=shoot(x0,xn,y0,func1,func2,t,h)
+       k1 = shoot(t0,x0,v1,dxdt,dvdt,h,tn)
+       k2 = shoot(t0,x0,v2,dxdt,dvdt,h,tn)
+       v0 = v1 + (v2-v1)*(xn-k1)/(k2-k1)
+       j = shoot(t0,x0,v0,dxdt,dvdt,h,tn)
     
-   print("z(0) =",t,", Iterations:",R)
+   return v0,iterations,j
+
+#Lagrange Function
+    
+def Lagrange(x,y,a):
+    n=len(x)
+    r=0
+    p=1
+    for i in range(n):
+        for j in range(n):
+           if j!=i:
+            p=p*((a-x[j])/(x[i]-x[j]))
+        r=r+(p*y[i])
+        p=1
+    return r
    
    
    
@@ -225,8 +238,7 @@ def powriter(A,x0,e):
       z=matpro(A,y)  
       k1=dot(z,x0)/dot(y,x0)
     
-    print("Eigenvalue:",k1,", Iterations: ",sum)
-    print(y)
+    print("Eigenvalue:",k1,", Iterations: ",sum,"\n\nEigenket:")
     
     sum=0 
     for i in range(len(y)):sum+=y[i][0]**2
