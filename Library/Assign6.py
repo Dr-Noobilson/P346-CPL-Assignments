@@ -106,12 +106,12 @@ def powriter(A,x0,e):
       z=matpro(A,y)  
       k1=dot(z,x0)/dot(y,x0)
     
-    print("Eigenvalue:",k1,", Iterations: ",sum,"\n\nEigenket:")
+    print("Eigenvalue:",round(k1,3),", Iterations: ",sum,"\n\nEigenket:")
     
     #Finding normalized eigenvector
     sum=0 
     for i in range(len(y)):sum+=y[i][0]**2
-    for i in range(len(y)):y[i][0]/=math.sqrt(sum)
+    for i in range(len(y)):y[i][0]=round(y[i][0]/math.sqrt(sum),3)
     return(y)
     
     
