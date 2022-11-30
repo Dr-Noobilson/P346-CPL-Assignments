@@ -188,13 +188,13 @@ def LU(A):
 def forw(A,B):
     n=len(A)
     sum=0
-    for k in range(n):
-      for i in range(n):
-        
+    for i in range(n):
+      for k in range(n): 
         for j in range(i):
+            
             sum=sum+A[i][j]*B[j][k]
         
-        B[i][k]=B[i][k]-sum
+        B[i][k]=(B[i][k]-sum)
         sum=0
         
     return B
@@ -204,9 +204,9 @@ def forw(A,B):
 def back(A,B,e):
     n=len(A)
     sum=0
-    for k in range(n):
-      for i in range(n-1,-1,-1):
-        
+ 
+    for i in range(n-1,-1,-1):
+       for k in range(n): 
         for j in range(i+1,n):
             sum=sum+A[i][j]*B[j][k]
             

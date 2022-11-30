@@ -1,4 +1,6 @@
 import math
+from .Class2 import Guass
+
 def LU(A):
  n=len(A)
  sum=0
@@ -181,3 +183,12 @@ def chelk(A,B,e):
    print ('  '.join(map(str, line))) 
       
   return B  
+
+
+
+def l(A):
+  K=[[0.2,-5,3,0.4,0,1,0,0,0,0],[-0.5,1,7,-2,0.3,0,1,0,0,0],[0.6,2,-4,3,0.1,0,0,1,0,0],
+     [3,0.8,2,-0.4,3,0,0,0,1,0],[0.5,3,2,0.4,1,0,0,0,0,1]]
+  K=Guass(K)
+  print(K)
+  
