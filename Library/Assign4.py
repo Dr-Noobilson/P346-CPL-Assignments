@@ -256,6 +256,9 @@ def FitPlot(A,B,a,b,func,D):
  plt.plot(x, func(x,D),label="Fitting function",color='orange') #Plotting the obtained best fit function
  plt.scatter(A,B,label="data points",marker='.') #Plotting the given data points
  plt.legend()
+ plt.xlabel("x")
+ plt.ylabel("y")
+ plt.grid()
  plt.show()    
 
 

@@ -53,6 +53,7 @@ def equi(Nl,T,dt,seed):
     plt.ylabel("Number of particles")
     # plt.plot(np.arange(0,T,(T/2),[Nl,Nl,Nl]),label="equilibrium line",color='orange')
     plt.legend() 
+    plt.grid()
     plt.show()
     
     
@@ -210,7 +211,7 @@ def back(A,B,e):
         for j in range(i+1,n):
             sum=sum+A[i][j]*B[j][k]
             
-        B[i][k]=round((B[i][k]-sum)/A[i][i],e)
+        B[i][k]=truncate((B[i][k]-sum)/A[i][i],e)
         sum=0
     
     return B
