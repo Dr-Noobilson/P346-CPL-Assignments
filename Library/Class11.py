@@ -11,6 +11,8 @@ def radioact(Na,T,dt,e):
     L=0.6931*dt/T
     r=int(T/dt)
     A,B,X=[Na],[0],[0]
+    D=[0]
+    decays=0
     
     for j in range(r+1):
         
@@ -19,16 +21,24 @@ def radioact(Na,T,dt,e):
         if e/Na<L:
             Na-=1
             Nb+=1
+            decays += 1
         
      A.append(Na)
      B.append(Nb)
      X.append((j+1)*dt)
+     D.append(decays)
      N=Na
+     decays = 0
         
     f=plt.figure()
     plt.scatter(X,A,marker=".")
     plt.scatter(X,B,marker=".")
-    plt.show()  
+    plt.show() 
+    
+    f1=plt.figure() 
+    plt.bar(X,D)
+    plt.xlim([0,5])
+    plt.show()
     
     
     
@@ -39,6 +49,7 @@ def radioact2(Na,T1,T2,dt,e):
     L2=0.6931*dt/T2
     r=int(max(T1,T2)/dt)
     A,B,C,X=[Na],[0],[0],[0]
+
     
     for j in range(r+1):
         
@@ -47,6 +58,7 @@ def radioact2(Na,T1,T2,dt,e):
         if e/Na<L1:
             Na-=1
             Nb+=1
+
             
      N=Nb
      for i in range(N):
@@ -72,3 +84,8 @@ def radioact2(Na,T1,T2,dt,e):
     plt.scatter(X,B,marker=".")
     plt.scatter(X,C,marker=".")
     plt.show()   
+    
+    f6=plt.figure()
+    plt.bar(B,X,align='edge', width=0.2)
+    plt.xlim([0,40])
+    plt.show()

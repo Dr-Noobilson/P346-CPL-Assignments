@@ -253,8 +253,9 @@ def Fit(A,B,n):
 def FitPlot(A,B,a,b,func,D):
  f = plt.figure()
  x = np.linspace(a, b, 1000) 
- plt.plot(x, func(x,D)) #Plotting the obtained best fit function
- plt.plot(A,B) #Plotting the given data points
+ plt.plot(x, func(x,D),label="Fitting function",color='orange') #Plotting the obtained best fit function
+ plt.scatter(A,B,label="data points",marker='.') #Plotting the given data points
+ plt.legend()
  plt.show()    
 
 

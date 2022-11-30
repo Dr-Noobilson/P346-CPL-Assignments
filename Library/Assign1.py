@@ -64,3 +64,6 @@ class myComplex:
     
   def mod(self):
     print(round(sqrt(self.a**2+self.b**2),3),"\n",round(sqrt(self.c**2+self.d**2),3))
+
+def truncate(f, n):
+    return math.floor(f * 10 ** n) / 10 ** n

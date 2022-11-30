@@ -78,7 +78,8 @@ def bound(t0,tn,x0,xn,dxdt,dvdt,v1,v2,h,e):
 
 
    
-   
+def truncate(f, n):
+    return math.floor(f * 10 ** n) / 10 ** n
    
 
 #Function to find dot product of two matrices

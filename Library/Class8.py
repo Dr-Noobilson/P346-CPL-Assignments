@@ -50,9 +50,12 @@ def RK4(x0,y,func,h,x):
     k1=k2=k3=k4=0
     
     while x0<=x:
+        
         A.append(x0)
         B.append(y)
-        if x0+h>x: h=x-x0
+        
+        if x0+h>x and x0!=x: h=x-x0 
+        
         k1=h*func(y,x0)
         k2=h*func(y+k1/2,x0+h/2)
         k3=h*func(y+k2/2,x0+h/2)
@@ -63,7 +66,8 @@ def RK4(x0,y,func,h,x):
     
     print("Solution at",x, " is:", y)      
     return A,B
- 
+
+
 #Plotter   
 def Plotter(A,B,func):
        

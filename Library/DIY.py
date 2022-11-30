@@ -2,6 +2,7 @@ import math
 from .Assign2 import rand
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 
 j=32768
@@ -29,8 +30,8 @@ def montec(integrand,a,b,N,samples):
     solution_list = []
     
     for i in range(N):
-        variance += integrand(samples[i])**2
-        mean += integrand(samples[i])
+        variance += integrand(samples[i],0)**2
+        mean += integrand(samples[i],0)
     
     solution_list.append((b-a)*mean/N)
     solution_list.append(variance/N - (mean/N)**2)
@@ -77,7 +78,7 @@ def importance_sampling(integrand,pdf,guess_pdf,samples,parameter):
     solution_list = []
     
     for i in range(N):
-        term = integrand(samples[i])*pdf(samples[i],parameter)/guess_pdf(samples[i],parameter)
+        term = integrand(samples[i],parameter)*pdf(samples[i],parameter)/guess_pdf(samples[i],parameter)
         weighted_sum += term
         squared_weighted_sum += term**2
         
@@ -125,56 +126,78 @@ def solution_plotter(integrand,pdf,guess_pdf,parameter,cpdf,N,seed):
 
 
 
-def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size,seed):
+def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size):
     
     random_sample = []
     accepted = 0
     burn_in = int(N*0.5)
+    normalizer = 0
     
     for i in range(N):
         
         random_sample.append(x0)
+        normalizer += guess_pdf(x0,parameter)
         
         l = r = step_size/2
         if x0 + step_size/2 > b: r = b - x0
         if x0 - step_size/2 < a: l= x0 - a
         
-        trial = x0 - l + (r+l)*rand(x0)/j
+        trial = x0 - l + (r+l)*random.random()
         acceptance = guess_pdf(trial,parameter)/guess_pdf(x0,parameter)
   
         if acceptance >= 1: 
             x0 = trial
             accepted += 1
             
-        else:
-            seed = rand(seed)/j 
-            if seed < acceptance: 
+        else: 
+            if random.random() < acceptance: 
                 x0 = trial
                 accepted  += 1
     
+    normalizer /= N
     print(accepted/N)    
-    return random_sample[burn_in:]
+    return random_sample[burn_in:], normalizer 
 
 
 
-def markov_sample_plotter(pdf,samples,a,b,parameter):
+def markov_sample_plotter(pdf,samples,a,b,parameter,k):
     N=len(samples)
-    new_sample = []
-    
-    for i in range(N):
-        if i % 10 == 0:
-            new_sample.append(samples[i])
             
-            
-    f1=plt.figure()
-    plt.hist(samples,bins=20)
-    f2=plt.figure()
-    plt.hist(new_sample,bins=20)
-    f3=plt.figure()
+    y, x, _ = plt.hist(samples, bins=75)
+    fig = plt.figure()
+    weights = np.ones_like(samples)/(y.max()*k)
+    plt.hist(samples,  weights=weights, bins=75)
     x = np.linspace(a, b, 1000)
     plt.plot(x, pdf(x,parameter))
     plt.show()  
               
+
                
 
-  
+def markov_solution_plotter(integrand,pdf,guess_pdf,para1,para2,N,x,y,x0,h):
+    
+    x_values = []
+    mean_values = []
+    variance_values =[]
+    step_size = 0.05
+    l = 0
+    
+    while para1 <= para2:
+        
+        samples,l = markov_sampling(N,x,y,guess_pdf,para1,x0,h)
+        
+        x_values.append(para1)
+        a,b = importance_sampling(integrand,pdf,pdf,samples,para1)
+        mean_values.append(a)
+        variance_values.append(b)
+        
+        para1 += step_size
+        h *= 1.2
+    
+    figure1 = plt.figure()
+    plt.scatter(x_values,mean_values,marker='.')
+
+    figure2 = plt.figure()
+    plt.scatter(x_values,variance_values,marker='.')
+
+
