@@ -24,31 +24,38 @@ def equi(Nl,T,dt,seed):
     Nr = 0
     r = int(T/dt)
     A,B,X = [Nl],[0],[0]
-
+    mx,mn,p=0,0,1
+    
     
     for j in range(r+1):
         
       seed=rand(seed)/m
       
-      if seed>min(Nl/Q,Nr/Q):
-          
-        if Nl/Q > Nr/Q:
+      mx=max(Nl/Q,Nr/Q)
+      mn=min(Nl/Q,Nr/Q)
+      
+      if seed>=mn:
+        
+        if mx == mn: p=round(rand(seed)/m)   
+        elif Nl/Q == mx: p=1
+        else: p=0
+        
+        if p == 1:
             Nr += 1
-            Nl -= 1
-              
-        elif Nl/Q < Nr/Q:
+            Nl -= 1  
+                 
+        else:
             Nr -= 1
             Nl += 1
-            
-         
-        A.append(Nl)
-        B.append(Nr)
-        X.append((j+1)*dt)
+       
+      A.append(Nl)
+      B.append(Nr)
+      X.append((j+1)*dt)
      
     print("At equilibrium: \nNumber of particles on left side =",Nl,"\nNumber of Particles on right side =",Nr)   
     f=plt.figure()
-    plt.scatter(X,A,marker=".",label='Left Side')
-    plt.scatter(X,B,marker=".",label='Right Side')
+    plt.plot(X,A,label='Left Side')
+    plt.plot(X,B,label='Right Side')
     plt.xlabel("Time")
     plt.ylabel("Number of particles")
     # plt.plot(np.arange(0,T,(T/2),[Nl,Nl,Nl]),label="equilibrium line",color='orange')
@@ -56,11 +63,7 @@ def equi(Nl,T,dt,seed):
     plt.grid()
     plt.show()
     
-    
-    # f1=plt.figure() 
-    # plt.bar(X,D)
-    # plt.xlim([0,5])
-    # plt.show()
+
 
 
 def RK4(x0,y,func,h,x,e): 
