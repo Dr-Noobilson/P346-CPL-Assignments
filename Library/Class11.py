@@ -89,3 +89,47 @@ def radioact2(Na,T1,T2,dt,e):
     plt.bar(B,X,align='edge', width=0.2)
     plt.xlim([0,40])
     plt.show()
+
+
+def f1(x):
+    return 2500  
+    
+#For Question 2
+def equi(Nl,T,dt,seed):
+    
+    Q,Nr,p = Nl,0,1
+    r = int(T/dt)
+    A,B,X = [Nl],[0],[0]
+    seed1 = seed
+    
+    for j in range(r+1):
+              
+      seed=(Nl/Q)*rand(seed1)/m
+      seed1=(Nr/Q)*rand(seed)/m
+        
+      if seed < seed1: p = 0
+      elif seed > seed1: p = 1
+      else: p=round(rand(seed)/m)
+      
+      if p == 1:
+        Nl -= 1
+        Nr += 1
+      else:
+        Nr -= 1
+        Nl += 1   
+         
+      A.append(Nl)
+      B.append(Nr)
+      X.append((j+1)*dt)
+    
+    y=2500 
+    print("At time:",X[-1],"\nNumber of particles on left side =",Nl,"\nNumber of Particles on right side =",Nr)   
+    f=plt.figure()
+    plt.plot(np.arange(0,X[-1]*1.5,(X[-1]*1.5)/3),[y,y,y],label="Equilibrium line",color='black') 
+    plt.plot(X,A,label='Left Side')
+    plt.plot(X,B,label='Right Side')
+    plt.xlabel("Time")
+    plt.ylabel("Number of particles")
+    plt.legend() 
+    plt.grid()
+    plt.show()
