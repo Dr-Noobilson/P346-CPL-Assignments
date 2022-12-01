@@ -5,6 +5,7 @@ import numpy as np
 import random
 
 
+#Random Number Generators
 j=32768
 
 def LCG(n,k):
@@ -22,7 +23,10 @@ def LCG2(n,a,b,k):
   return x
 
 
-#Monte Carlo  
+
+
+
+#Crude Monte Carlo Integration Functions
 def montec(integrand,a,b,N,samples):
     
     mean = 0
@@ -66,10 +70,14 @@ def crude_montec_plotter(integrand,a,b,N,seed):
 
 
 
+
+#Importance Sampling Monte Carlo method
+
+#Inverse transform sampler
 def inverse_sampling(cpdf,N,seed,parameter):
     return [cpdf(i,parameter) for i in LCG(N,seed)]
    
-   
+#Importance sampling Integration   
 def importance_sampling(integrand,pdf,guess_pdf,samples,parameter):
     
     weighted_sum = 0
@@ -86,20 +94,6 @@ def importance_sampling(integrand,pdf,guess_pdf,samples,parameter):
     solution_list.append(squared_weighted_sum/N - (weighted_sum/N)**2)
     
     return solution_list
-
-
-def minimizer(P1,P2,integrand,pdf,guess_pdf,cpdf,N,seed,step_size):
-    variance = []
-    parameters = []
-    
-    while P1 < P2:
-        samples = inverse_sampling(cpdf,N,seed,P1)
-        variance.append(importance_sampling(integrand,pdf,guess_pdf,samples,P1)[1])
-        parameters.append(P1)
-        P1 += step_size
-    
-    plt.scatter(parameters,variance,marker='.')
-    plt.show()
 
 
 def solution_plotter(integrand,pdf,guess_pdf,parameter,cpdf,N,seed):
@@ -125,8 +119,36 @@ def solution_plotter(integrand,pdf,guess_pdf,parameter,cpdf,N,seed):
     return x_values, mean_values, variance_values
 
 
+#Variance vs parameter plotter
+def minimizer(P1,P2,integrand,pdf,guess_pdf,cpdf,N,seed,step_size):
+    variance = []
+    parameters = []
+    
+    while P1 < P2:
+        samples = inverse_sampling(cpdf,N,seed,P1)
+        variance.append(importance_sampling(integrand,pdf,guess_pdf,samples,P1)[1])
+        parameters.append(P1)
+        P1 += step_size
+    
+    plt.scatter(parameters,variance,marker='.')
+    plt.xlabel("Parameter (β)")
+    plt.ylabel("Variance (σ^2)")
+    plt.grid()
+    plt.show()
 
-def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size):
+
+
+
+
+
+
+
+
+
+#Variation Monte Carlo technique
+
+#Metropolis sampler
+def metropolis_sampling(N,a,b,guess_pdf,parameter,x0,step_size):
     
     random_sample = []
     accepted = 0
@@ -154,27 +176,33 @@ def markov_sampling(N,a,b,guess_pdf,parameter,x0,step_size):
                 x0 = trial
                 accepted  += 1
     
-    normalizer /= N
-    print(accepted/N)    
+    normalizer /= N  
     return random_sample[burn_in:], normalizer 
 
 
 
-def markov_sample_plotter(pdf,samples,a,b,parameter,k):
-    N=len(samples)
+
+def metropolis_sample_plotter(pdf,samples,a,b,parameter,k):
             
     y, x, _ = plt.hist(samples, bins=75)
+    plt.xlabel("x")
+    plt.ylabel("Frequency")
+    plt.grid()
     fig = plt.figure()
     weights = np.ones_like(samples)/(y.max()*k)
-    plt.hist(samples,  weights=weights, bins=75)
+    plt.hist(samples,  weights=weights, bins=75,label="Samples")
     x = np.linspace(a, b, 1000)
-    plt.plot(x, pdf(x,parameter))
+    plt.plot(x, pdf(x,parameter),label="PDF ρ(x))")
+    plt.xlabel("x")
+    plt.ylabel("Relative Frequency")
+    plt.grid()
+    plt.legend()
     plt.show()  
               
 
                
-
-def markov_solution_plotter(integrand,pdf,guess_pdf,para1,para2,N,x,y,x0,h):
+#Variance vs parameter plotter
+def metropolis_solution_plotter(integrand,pdf,guess_pdf,para1,para2,N,x,y,x0,h):
     
     x_values = []
     mean_values = []
@@ -184,7 +212,7 @@ def markov_solution_plotter(integrand,pdf,guess_pdf,para1,para2,N,x,y,x0,h):
     
     while para1 <= para2:
         
-        samples,l = markov_sampling(N,x,y,guess_pdf,para1,x0,h)
+        samples,l = metropolis_sampling(N,x,y,guess_pdf,para1,x0,h)
         
         x_values.append(para1)
         a,b = importance_sampling(integrand,pdf,pdf,samples,para1)
@@ -196,8 +224,27 @@ def markov_solution_plotter(integrand,pdf,guess_pdf,para1,para2,N,x,y,x0,h):
     
     figure1 = plt.figure()
     plt.scatter(x_values,mean_values,marker='.')
+    plt.xlabel("Parameter (β)")
+    plt.ylabel("Ground state energy (E_T)")
+    plt.grid()
 
     figure2 = plt.figure()
     plt.scatter(x_values,variance_values,marker='.')
+    plt.xlabel("Parameter (β)")
+    plt.ylabel("Variance (σ^2)")
+    plt.grid()
 
 
+
+
+def generic_plotter(a,b,f1,f2,f3,L1,L2):
+    x = np.arange(a,b,0.01)
+    plt.plot(x,f1(x,L1),label="Integrand",color='black')
+    plt.plot(x,f2(x,L1),label="Importance Distribution 1",color='green',linestyle='--'
+             ,linewidth=1) 
+    plt.plot(x,f3(x,L2),label="Importance Distribution 2",color='blue',linestyle='--'
+             ,linewidth=1)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.legend()
+    plt.grid()
